@@ -1,6 +1,7 @@
 package com.onesaitplatform.hungercode.datagenerator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -9,17 +10,25 @@ public class DataGenerator {
 
 	private static final int COORDINATE_SETS = 10;
 	private static final int MIN_VEHICLE_ID = 1000000; 
+	private static int MIN_TYPE_ID = 1900;
 	private static Random aleatorios;
 
 
 	public static void main(String[] args) {
+		aleatorios = new Random();
+		
+		List<String> vehicleTypeNames = new ArrayList<String>(Arrays.asList("Car","Motorcycle", "Scooter", "Minivan"));
+		List<Integer> vehicleMaxPax = new ArrayList<Integer> (Arrays.asList(4,     2,            2,        7));
+		List<Integer> ids = generaVehicleTypes(vehicleTypeNames.size());
+		System.out.print(generateVehicleTypesJson(vehicleTypeNames, ids, vehicleMaxPax));
+		
+		// vehicle Logs
 		
 		double north = 40.472659;
 		double south = 40.394216;
 		double east = -3.658012;
 		double west = -3.728298;
 		
-		aleatorios = new Random();
 
 		double [][] coordinatesets = new double[COORDINATE_SETS][2];
 		List<String> locationPathStrings = new ArrayList<>();
@@ -96,14 +105,44 @@ public class DataGenerator {
 			route.append("\",\"extraOptions\":\"");
 			route.append("Default Options");
 			route.append("\",\"device\":\"");
-			route.append(String.format("HG_Vehicle: %d", vehicleId));
+			route.append(String.format("HG_Vehicle: %7d", vehicleId));
 			route.append("\",\"timestamp\":\"2019-09-30T17:");
-			route.append(7 + i);
+			route.append(String.format("%02d", 7 + i));
 			route.append(":");
-			route.append(aleatorios.nextInt(19)); //inexactitud del timestamp: hasta 19 segundos tras el minuto.
+			route.append(String.format("%02d", aleatorios.nextInt(19))); //inexactitud del timestamp: hasta 19 segundos tras el minuto.
 			route.append("Z\"}}\n");
-
+			i++;
 		}
 		return new String(route);
+	}
+
+	private static List<Integer> generaVehicleTypes(int nofTypes){
+		List<Integer> types = new ArrayList<>(nofTypes);
+		for (int i = 0; i < nofTypes;) {
+			int nextType = aleatorios.nextInt(MIN_TYPE_ID)+MIN_TYPE_ID;
+			if (!types.contains(nextType)) {
+				types.add(nextType);
+				i++;
+			}
+		}
+		return types;
+	}
+	
+	
+//	{"HG_VehicleType":{ "id":28.6,"typeName":"string","maxPassenger":28.6}}
+	private static String generateVehicleTypesJson(List<String> typeNames, List<Integer> vehicleTypesIds, List<Integer> maxPax) {
+		StringBuffer vTypes = new StringBuffer();
+		int i = 0;
+		for (Integer oneType:vehicleTypesIds) {
+			vTypes.append("{\"HG_VehicleType\":{ \"id\":");
+			vTypes.append(oneType);
+			vTypes.append(",\"typeName\":\"");
+			vTypes.append(typeNames.get(i%typeNames.size()));
+			vTypes.append("\",\"maxPassenger\":");
+			vTypes.append(maxPax.get(i%maxPax.size()));
+			vTypes.append("}}\n");
+			i++;
+		}
+		return new String(vTypes);
 	}
 }

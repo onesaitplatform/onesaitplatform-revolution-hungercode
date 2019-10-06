@@ -1,0 +1,5 @@
+[{"HG_VehicleType":{ "id":3567,"typeName":"Car","maxPassenger":4}},
+{"HG_VehicleType":{ "id":2631,"typeName":"Motorcycle","maxPassenger":2}},
+{"HG_VehicleType":{ "id":1933,"typeName":"Scooter","maxPassenger":2}},
+{"HG_VehicleType":{ "id":2891,"typeName":"Minivan","maxPassenger":7}}
+]
